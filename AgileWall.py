@@ -12,8 +12,8 @@ _LOGGER = logging.getLogger("AgileWall")
 # TODO - Check times are converted correctly for PW API
 # TODO - Details of the OAuth 2 SSO used by Tesla and the implications for the app
 
-if not sys.version_info >= (3, 10):
-    print("This program uses features which require Python 3.10 or later.")
+if not sys.version_info >= (3, 11):
+    print("This program uses features which require Python 3.11 or later.")
     exit(-1)
 
 
