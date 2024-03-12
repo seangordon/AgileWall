@@ -161,7 +161,7 @@ if LIST_ONLY:
 
 # Send the changes to the Powerwall API
 res = powerwall.set_tariff(pw_tariff)
-if not res == "success":
+if not res == "Updated":
     _LOGGER.error("Failed to update Powerwall Battery Tariff data.")
     exit(-3)
 
