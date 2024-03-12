@@ -40,23 +40,40 @@ The Average unit price is the midpoint in the separation of the rates, with Peak
 4. **Tesla API** - Manipulating the Time of Use & Rate Plan information on the Powerwall cannot be done through the local Gateway API connection, as a result the remote Tesla API must be used. This brings with it the added complexity of dealing with Tesla's OAuth 2.0 Single Sign-On service.
 
 ## Possible Future Features
-* **Tweak Rate Selection Thresholds** - Monitor the effectiveness of the current approach to bucketing the rates and see if additional parameters are needed to adjust the thresholds.
-* **Home Assistant Integration** - Add the ability to launch / monitor this utility from Home Assistant
-* **Node-Red Integration** - Run / monitor this script from Node-Red
+* **Tweak Rate Selection Thresholds** - Monitor the effectiveness of the current approach to bucketing the rates and see if additional parameters are needed to adjust the way thresholds are determined.
+* **Home Assistant Integration** - Add the ability to launch / monitor this program from Home Assistant
+* **Node-Red Integration** - Run / monitor this program from Node-Red
 
 ## External Libraries & Dependencies
 This utility uses the [TeslaPy](https://github.com/tdorssers/TeslaPy) Library to access the Powerwall API and to handle the OAuth 2 authentication used by the Tesla API.
 
-As a result of the above dependency and some language features used in this utility it will only work with **Python 3.10 or later**.
+Install TeslaPy from PyPi https://pypi.org/project/TeslaPy/
+    
+    pip install TeslaPy
+
+Alternatively you can install all the dependencies for this program using:
+    
+    pip install -r requirements.txt
+
+As a result of the above dependency and some language features used in this program it will only work with **Python 3.11 or later**.
 
 ## Running the app
+
+### Run with "List Only" mode first!
+Make sure that you are happy with the Utility Plan Schedules that this program is generating before you let it make any updates to your Powerwall data. 
+
+Another benefit of running in "List Only" mode first is that it tests the end-to-end connectivity to the Tesla API, and goes through the SSO Authentication, caching the Refresh Token so that subsequent API calls don't need you to log on to your Tesla Account.
 
 ### Tesla OAuth Single Sign-On (SSO)
 The [TeslaPy](https://github.com/tdorssers/TeslaPy) Library implements the OAuth SSO needed by the Tesla API, this means that when you first run the application it will prompt you to log on to your Tesla account using a supplied URL, you will then need to copy the resulting sign-on URL back to the console window. so the program can complete the sign-on.
 
 You only need to carry out this step once, as the SSO refresh token will then be stored in the same folder as the program, in a file named **cache.json**
 
-**TODO** Add example of screen output
+    Use browser to login. "Page Not Found" will be shown on success.
+    
+    Open this URL: https://auth.tesla.com/oauth2/v3/authorize?...
+
+    Enter URL after authentication:_
 
 ### Important - Scheduling this Program
 
@@ -67,31 +84,36 @@ If you want to check the changes that will be made, you can run the program with
 **Note:** The program always attempts to download the next day's Agile tariff, so if the program is run before this data is available on the Octopus API, the program will display an error message and exit.
 
 ### Command Line Parameters:
+|Arg.| Options | Description|
+|--------|---------|------------|
+| **-t** | \<Agile Tariff Code\> | If you don't know yours, use the included AgileCodes.py to list all the publicly available tariffs and their associated codes. |
+| **-a** | \<DNO Area Code\> | You can find your DNO code here if you don't know it - [DNO Codes Explained](https://energy-stats.uk/dno-region-codes-explained/) |
+| **-i** | \<Tesla ID\> | |
+| **-d** | \<day_offset\> | 0=today (default), 1=yesterday and so on. |
+|        |                | This option is useful for testing the program before the current day's schedule is available, or to check behaviour against historic rates. Automatically switches on List mode to prevent any changes to the Powerwall when using old data. |
+| **-L** |  | List the config changes without sending to the Powerwall (Turns on Verbose Output) |
+| **-v** | | Verbose Console Output |
 
-    **-t** \<Agile Tariff Code\>
-    **-a** \<DNO Area Code\>
-    **-i** \<Tesla ID\>
-    **-L** List only - List the config changes without sending to the Powerwall (Turns on Verbose Output)
-    **-v** Verbose Console Output
+---
+**Needless to say, make sure that the Tariff Code and DNO Code are correct for your location otherwise the Agile Tariff data will be wrong...**
 
-
-You can find your DNO code here if you don't know it - [DNO Codes Explained](https://energy-stats.uk/dno-region-codes-explained/)
-
-**Agile Tariff Code** - If you don't know yours, use the included AgileCodes.py to list all the publicly available tariffs and their associated codes.
-
-**Needless to say, you need to make sure that the Tariff Code and DNO Code are correct for your location otherwise the Agile Tariff data will be wrong...**
-
-**Note:** To see the changes in the Tesla app, you'll need to restart it, as the app appears to cache the Utility Rate Plan and doesn't refresh automatically when it is changed via the API 
+**Note:** To see the changes in the Tesla app, you'll need to restart it, as the app appears to cache the Utility Rate Plan and doesn't refresh immediately when it is changed via the API.
 
 ### Exit Codes
 The program will signal success/failure by returning one of the following exit codes:
 
-* **0** - Program Executed Successfully, new tariffs were fetched and uploaded to the Powerwall
-* **1** - List mode completed successfully
-* **-1** - Incorrect version of Python (must be 3.10 or later)
-* **-2** - Agile Tariffs not available (happens if you run the program before 4pm)
-* **-3** - Failed callinging Tesla Powerwall API
-* **-4** - P
+| Exit Code | Description |
+|:-----------:|-------------|
+| **0**     | Program Executed Successfully, new tariffs were fetched and uploaded to the Powerwall |
+| **1** | List mode completed successfully |
+| **-1** | Incorrect version of Python (must be 3.10 or later) |
+| **-2** | Agile Tariffs not available (happens if you run the program before 4pm) |
+| **-3** | Failed callinging Tesla Powerwall API |
+---
+## Running from Node-Red
+By using the Exec node, you can call this program as shown below. I've added additional nodes to capture all the output and send alerts to Pushover if anything goes wrong...
+
+![Node-Red Flow](images/Node-Red.png)
 
 ## Screen Shots
 When you have uploaded the Agile tariff data, you should see something like this on the Tesla iPhone app:

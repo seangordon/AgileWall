@@ -1,4 +1,4 @@
-import TeslaPy.teslapy
+import teslapy
 import json
 from datetime import datetime, timedelta, date
 
@@ -7,7 +7,7 @@ class Powerwall:
     def __init__(self, tesla_id):
         self.tesla_id = tesla_id
 
-        tesla = TeslaPy.teslapy.Tesla(self.tesla_id)
+        tesla = teslapy.Tesla(self.tesla_id)
         if not tesla.authorized:
             print('Use browser to login. "Page Not Found" will be shown on success.')
             print('Open this URL: ' + tesla.authorization_url())
@@ -19,7 +19,7 @@ class Powerwall:
     def get_tariff(self):
         # Powerwall API returns schedule data in local time (DST or non-DST)
 
-        with TeslaPy.teslapy.Tesla(self.tesla_id) as tesla:
+        with teslapy.Tesla(self.tesla_id) as tesla:
             batteries = tesla.battery_list()
             tariff = batteries[0].get_tariff()
         return tariff

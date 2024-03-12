@@ -1,10 +1,10 @@
-from enum import StrEnum, auto
+from enum import Enum, auto
 import requests
 from datetime import datetime, timedelta, date, timezone
 from dateutil import parser
 import logging
 
-class RateType(StrEnum):
+class RateType(Enum):
     UNKNOWN = auto()
     SUPER_OFF_PEAK = auto()
     OFF_PEAK = auto()
