@@ -28,7 +28,7 @@ class Powerwall:
     def set_tariff(self, battery_tariff):
         # Powerwall API returns schedule data in local time (DST or non-DST)
 
-        with TeslaPy.teslapy.Tesla(self.tesla_id) as tesla:
+        with teslapy.Tesla(self.tesla_id) as tesla:
             batteries = tesla.battery_list()
             res = batteries[0].set_tariff(battery_tariff)
         return res
