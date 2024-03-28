@@ -9,7 +9,6 @@ VERSION = "0.1"
 
 _LOGGER = logging.getLogger("AgileWall")
 
-# TODO - Check times are converted correctly for PW API
 # TODO - Details of the OAuth 2 SSO used by Tesla and the implications for the app
 
 if not sys.version_info >= (3, 11):
@@ -96,15 +95,15 @@ rate_super = agile.get_average_rate(SuperOffPeak)
 if VERBOSE:
     agile.print_tou("Super Off-Peak", rate_super, tou_super)
 
-tou_offpeak = agile.build_tou_periods(OffPeak)
-rate_offpeak = agile.get_average_rate(OffPeak)
+tou_off_peak = agile.build_tou_periods(OffPeak)
+rate_off_peak = agile.get_average_rate(OffPeak)
 if VERBOSE:
-    agile.print_tou("Off-Peak", rate_offpeak, tou_offpeak)
+    agile.print_tou("Off-Peak", rate_off_peak, tou_off_peak)
 
-tou_midpeak = agile.build_tou_periods(MidPeak)
-rate_midpeak = agile.get_average_rate(MidPeak)
+tou_mid_peak = agile.build_tou_periods(MidPeak)
+rate_mid_peak = agile.get_average_rate(MidPeak)
 if VERBOSE:
-    agile.print_tou("Mid-Peak", rate_midpeak, tou_midpeak)
+    agile.print_tou("Mid-Peak", rate_mid_peak, tou_mid_peak)
 
 tou_peak = agile.build_tou_periods(Peak)
 rate_peak = agile.get_average_rate(Peak)
@@ -113,7 +112,7 @@ if VERBOSE:
 
 # Build the Rate Type / Energy Charges structure 
 #    - this is stored in a separate structure from the ToU time slots
-tou_rates = agile.build_tou_rates(rate_super, rate_offpeak, rate_midpeak, rate_peak)
+tou_rates = agile.build_tou_rates(rate_super, rate_off_peak, rate_mid_peak, rate_peak)
 
 # Fetch the current Powerwall Battery Tariff data from Tesla
 # The Update API takes the entire tariff configuration structure as input, so fetch
@@ -145,8 +144,8 @@ if VERBOSE:
 
 # Update ToU Slots in the Battery Tariff data
 pw_tariff["seasons"]["Summer"]["tou_periods"]["SUPER_OFF_PEAK"] = tou_super
-pw_tariff["seasons"]["Summer"]["tou_periods"]["OFF_PEAK"] = tou_offpeak
-pw_tariff["seasons"]["Summer"]["tou_periods"]["PARTIAL_PEAK"] = tou_midpeak
+pw_tariff["seasons"]["Summer"]["tou_periods"]["OFF_PEAK"] = tou_off_peak
+pw_tariff["seasons"]["Summer"]["tou_periods"]["PARTIAL_PEAK"] = tou_mid_peak
 pw_tariff["seasons"]["Summer"]["tou_periods"]["ON_PEAK"] = tou_peak
 
 if VERBOSE:
