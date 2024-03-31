@@ -52,11 +52,11 @@ def export_agile_rates(min, max, off_peak, mid_peak, peak, out_dir):
 
     with open(file_name, 'w') as f:
         f.write(f"// Powerwall Rate Ranges\n" 
-                f"var MIN = {min}\n" 
-                f"var OFF_PEAK = {off_peak}\n" 
-                f"var MID_PEAK = {mid_peak}\n" 
-                f"var PEAK = {peak}\n" 
-                f"var MAX = {max}\n"
+                f"var MIN = {round(min,1)}\n" 
+                f"var OFF_PEAK = {round(off_peak,1)}\n" 
+                f"var MID_PEAK = {round(mid_peak,1)}\n" 
+                f"var PEAK = {round(peak,1)}\n" 
+                f"var MAX = {round(max,1)}\n"
         )
 
     return True
