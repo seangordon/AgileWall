@@ -57,6 +57,7 @@ Alternatively you can install all the dependencies for this program using:
 
 Because of the above dependency and some language features used in this program it will only work with **Python 3.11 or later**.
 
+
 ## Running the app
 
 ### Run with "List Only" mode first!
@@ -95,11 +96,40 @@ If you want to check the changes that will be made, you can run the program with
 |        |                | This option is useful for testing the program before the current day's schedule is available, or to check behaviour against historic rates. Automatically switches on List mode to prevent any changes to the Powerwall when using old data. |
 | **-L** |  | List the config changes without sending to the Powerwall (Turns on Verbose Output) |
 | **-v** | | Verbose Console Output |
+| **-c** | | Generate Agile/Powerwall chart output |
+| **-o** | \<Path\> | Specify the path to Generate Agile/Powerwall chart files in |
 
 ---
 **Needless to say, make sure that the Tariff Code and DNO Code are correct for your location otherwise the Agile Tariff data will be wrong...**
 
 **Note:** To see the changes in the Tesla app, you'll need to restart it, as the app appears to cache the Utility Rate Plan and doesn't refresh immediately when it is changed via the API.
+
+### Chart Output
+This is an experimental feature which will generate a set of HTML & JS files to render a chart which shows the current Octopus Agile rates with the Powerwall Utility Rate bands overlaid, as shown below.
+
+![Agile / Powerwall Rate Chart](images/Agile-PW-Rate-Chart.png)
+
+The chart is rendered from the following files:
+
+- **agile_chart.html**: Static HTML & JavaScript file (uses ApexCharts)
+- **chart_options.js**: Static file to configure some chart options:
+
+  - SHOW_LEGEND (true/false): Display a legend below the chart
+  - SHOW_TOOLBAR (true/false): Show/Hide the chart toolbar
+- **agile_data.js**: Generated file containing the current Agile rates
+- **powerwall_rates.js**: Generated file containing the data for the Powerwall rates overlay
+
+#### Chart Setup
+
+By default the files are generated in the current folder where the Python script is executed. If you want to output to a different location, use the -o option to specify the output directory and also copy the agile_chart.html and chart_options.js files to that directory.
+
+#### Rendering the Chart
+
+The best option for viewing the chart is to have the files generated into a directory which is HTTP accessible. In my case I generate the files into a directory and use the Node-Red HTML nodes to serve up the chart.
+
+I'm also using the Webpage card in Home Assistant to render this chart as part of a dashboard while I figure out the best way to integrate this functionality into HA more directly...
+
+
 
 ### Exit Codes
 The program will signal success/failure by returning one of the following exit codes:

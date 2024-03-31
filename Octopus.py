@@ -47,6 +47,8 @@ class Agile:
         self.LIMIT_SUPER_OFF_PEAK = 0
         self.LIMIT_OFF_PEAK = 0
         self.LIMIT_MID_PEAK = 0
+        self.MIN = 0
+        self.MAX = 0
 
     def get_agile_rates(self, tariff_code, area_code, day_offset=0):
         # Note: Octopus Agile API returns tariff data in UTC
@@ -71,7 +73,7 @@ class Agile:
             date_to = ""
         headers = {"content-type": "application/json"}
         url = f"{base_url}/"f"E-1R-{tariff_code}-{area_code}/" f"standard-unit-rates/{date_from}{date_to}"
-
+        print(url)
         self._LOGGER.info(f"get_agile_rates() - url ={url}")
 
         r = requests.get(url, headers=headers)
@@ -114,6 +116,9 @@ class Agile:
         # The Peak / Mid-Peak split is calculated as all rates below 50% of the max value
         self.LIMIT_MID_PEAK = (((rate_max - rate_avg) / 2) + rate_avg)
 
+        self.MAX = rate_max
+        self.MIN = rate_min
+
         self._LOGGER.info(f"__set_rate_limits() - rate_min={rate_min}, rate_avg={rate_avg}, rate_max={rate_max}," +
                           "LIMIT_SUPER_OFF_PEAK={self.LIMIT_SUPER_OFF_PEAK}, LIMIT_OFF_PEAK={self.LIMIT_OFF_PEAK}, "
                           "LIMIT_MID_PEAK={self.LIMIT_MID_PEAK}")
@@ -124,6 +129,9 @@ class Agile:
         else:
             self._LOGGER.error("__set_rate_limits() - Inconsistent Rate Thresholds found, aborting.")
             return False
+
+    def get_rate_min(self):
+        return self
 
     def get_super_off_peak_slots(self, agile_time_slots):
         # Tag the Super Off-Peak slots

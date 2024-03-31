@@ -1,0 +1,2 @@
+SHOW_LEGEND = true
+SHOW_TOOLBAR = false

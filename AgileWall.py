@@ -4,12 +4,11 @@ import logging
 import Octopus
 import Tesla
 import argparse
+import ChartGen
 
-VERSION = "0.1"
+VERSION = "0.3"
 
 _LOGGER = logging.getLogger("AgileWall")
-
-# TODO - Details of the OAuth 2 SSO used by Tesla and the implications for the app
 
 if not sys.version_info >= (3, 11):
     print("This program uses features which require Python 3.11 or later.")
@@ -28,6 +27,9 @@ parser.add_argument("-L", "--list_only", help="List Changes, but don't send to P
                     action="store_true", default=False)
 parser.add_argument("-d", "--delta", default=0, dest="delta", type=int, 
                     help="Days into the past to fetch Agile Schedule - Does not update Powerwall (Useful for testing)")
+parser.add_argument("-c", "--chart", help="Generate Chart Data", action="store_true", default=False)
+parser.add_argument("-o", "--chart_path", default=".", dest="chart_path", type=str, 
+                    help="Path to write the chart files to.")
 
 args = parser.parse_args()
 
@@ -37,6 +39,8 @@ TESLA_ID = args.tesla_id[0]
 VERBOSE = args.verbose
 LIST_ONLY = args.list_only
 DAY_OFFSET = args.delta
+CHART_GEN = args.chart
+CHART_PATH = args.chart_path
 
 if DAY_OFFSET != 0:  # Requesting past days Agile schedules means we must not update the Powerwall
     LIST_ONLY = True
@@ -152,6 +156,15 @@ if VERBOSE:
     print("ToU Periods (Updated)")
     print("=====================")
     print(json.dumps(pw_tariff["seasons"]["Summer"]["tou_periods"], indent=4))
+
+if CHART_GEN:
+    if not ChartGen.export_agile_data(agile_time_slots, CHART_PATH):
+        print("Error writing chart time slot data.")
+        exit(-4)
+
+    if not ChartGen.export_agile_rates(agile.MIN, agile.MAX, rate_off_peak, rate_mid_peak, rate_peak, CHART_PATH):
+        print("Error writing chart pw rate data.")
+        exit(-4)
 
 # Don't send the changes to the Powerwall if we are just listing the changes
 if LIST_ONLY:

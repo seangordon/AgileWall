@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>AgileWall Chart</title>
+
+      <style>
+            #chart {
+            padding-right: 10px;
+            max-width: 650px;
+            margin: 35px auto;
+            }    
+      </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+  </head>
+
+  <body>
+    <div id="chart"> </div>
+
+    <script src="agile_data.js"></script>
+    <script src="powerwall_rates.js"></script>
+    <script src="chart_options.js"></script>
+
+    <script>
+
+      const zeroPad = (num, places) => String(num).padStart(places, '0')
+      TIME_SLOT_START = "00:00" 
+      TIME_SLOT_END = "00:30"
+
+      // Current 1/2 hr time-slot
+      var d = new Date();
+      hr = d.getHours(); 
+      min = d.getMinutes(); 
+      if(min <= 30){
+        TIME_SLOT_START = zeroPad(hr, 2) + ":00" 
+        TIME_SLOT_END = zeroPad(hr, 2) + ":30"
+      }
+      else{
+        TIME_SLOT_START = zeroPad(hr, 2) + ":30"
+        hr = hr + 1
+        if(hr>23){hr == 0}
+        TIME_SLOT_END = zeroPad(hr, 2) + ":00"
+      }     
+
+      // Label Text & Styles
+      var PEAK_LBL = "Peak"
+      var OFF_PEAK_LBL = "Off-Peak"
+      var SUPER_OFF_PEAK_LBL = "Super Off-Peak"
+      var MID_PEAK_LBL = "Mid-Peak"
+      var PRICE_LBL = "Price (p)"
+
+      // Range Colours
+      var PEAK_CLR = "#FC8785"
+      var OFF_PEAK_CLR = "#B0FCAD"
+      var SUPER_OFF_PEAK_CLR = "#C3D8FF"
+      var MID_PEAK_CLR = "#FFFEB6"
+      var RATE_NOW_CLR = "#FEB019"
+      var BORDER_CLR = "#000000"
+      var LABEL_STYLE = { color: '#3427FF' }
+
+      var options = {
+        chart: {
+          toolbar: {
+            show: SHOW_TOOLBAR
+          },
+          type: 'line'
+        },
+        stroke: {
+          curve: 'stepline',
+        },
+        series: [{
+          name: PRICE_LBL,
+          data: RATES
+        }],
+        xaxis: {
+          categories: TIMES 
+        },
+        yaxis: {
+          decimalsInFloat: 1,
+          min: MIN,
+          max: MAX
+        },
+        legend: {
+              show: SHOW_LEGEND,
+              showForSingleSeries: true,
+              showForNullSeries: true,
+              showForZeroSeries: true,
+              position: 'bottom',
+              horizontalAlign: 'center', 
+              floating: false,
+              fontSize: '14px',
+              fontFamily: 'Helvetica, Arial',
+              fontWeight: 400,
+              formatter: undefined,
+              inverseOrder: false,
+              width: undefined,
+              height: undefined,
+              tooltipHoverFormatter: undefined,
+              customLegendItems: [SUPER_OFF_PEAK_LBL + " < " + OFF_PEAK +"p", 
+                                  OFF_PEAK_LBL +  " < " + MID_PEAK +"p", 
+                                  MID_PEAK_LBL +  " < " + PEAK +"p", 
+                                  PEAK_LBL +  " < " + MAX +"p" ]
+          },
+      annotations: {
+        yaxis: [
+          {
+            y: MIN,
+            y2: OFF_PEAK,
+            fillColor: SUPER_OFF_PEAK_CLR,
+            borderColor: BORDER_CLR,
+          },
+          {
+            y: OFF_PEAK,
+            y2: MID_PEAK,
+            fillColor: OFF_PEAK_CLR,
+            borderColor: BORDER_CLR
+          },
+          {
+            y: MID_PEAK,
+            y2: PEAK,
+            fillColor: MID_PEAK_CLR,
+            borderColor: BORDER_CLR
+          },
+          {
+            y: PEAK,
+            y2: MAX,
+            fillColor: PEAK_CLR,
+            borderColor: BORDER_CLR
+          }
+        ],
+          xaxis: [
+          {
+            x: TIME_SLOT_START,
+            x2: TIME_SLOT_END,
+            fillColor: RATE_NOW_CLR
+          }
+        ]
+      }  
+      }
+
+      var chart = new ApexCharts(document.querySelector("#chart"), options);
+      
+      chart.render();
+    </script>
+  </body>
+</html> 
+
