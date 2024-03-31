@@ -162,7 +162,7 @@ if CHART_GEN:
         print("Error writing chart time slot data.")
         exit(-4)
 
-    if not ChartGen.export_agile_rates(agile.MIN, agile.MAX, rate_off_peak, rate_mid_peak, rate_peak, CHART_PATH):
+    if not ChartGen.export_agile_rates(agile.MIN, agile.MAX, agile.LIMIT_SUPER_OFF_PEAK, agile.LIMIT_OFF_PEAK, agile.LIMIT_MID_PEAK, CHART_PATH):
         print("Error writing chart pw rate data.")
         exit(-4)
 

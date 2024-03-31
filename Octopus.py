@@ -119,9 +119,13 @@ class Agile:
         self.MAX = rate_max
         self.MIN = rate_min
 
-        self._LOGGER.info(f"__set_rate_limits() - rate_min={rate_min}, rate_avg={rate_avg}, rate_max={rate_max}," +
-                          "LIMIT_SUPER_OFF_PEAK={self.LIMIT_SUPER_OFF_PEAK}, LIMIT_OFF_PEAK={self.LIMIT_OFF_PEAK}, "
-                          "LIMIT_MID_PEAK={self.LIMIT_MID_PEAK}")
+#        self._LOGGER.info(f"__set_rate_limits() - rate_min={rate_min}, rate_avg={rate_avg}, rate_max={rate_max}," +
+#                          f"LIMIT_SUPER_OFF_PEAK={self.LIMIT_SUPER_OFF_PEAK}, LIMIT_OFF_PEAK={self.LIMIT_OFF_PEAK}, "
+#                          f"LIMIT_MID_PEAK={self.LIMIT_MID_PEAK}")
+
+        print(f"__set_rate_limits() - rate_min={rate_min}, rate_avg={rate_avg}, rate_max={rate_max}," +
+                          f"LIMIT_SUPER_OFF_PEAK={self.LIMIT_SUPER_OFF_PEAK}, LIMIT_OFF_PEAK={self.LIMIT_OFF_PEAK}, "
+                          f"LIMIT_MID_PEAK={self.LIMIT_MID_PEAK}")
 
         # Sanity Check the limits
         if rate_max > self.LIMIT_MID_PEAK > self.LIMIT_OFF_PEAK > self.LIMIT_SUPER_OFF_PEAK > rate_min:
