@@ -187,6 +187,19 @@ class Agile:
 
         return mid_peak
 
+    def get_combined_peak_slots(self, agile_time_slots):
+        combined_peak = []
+        # Tag the Mid-Peak slots
+        for item in agile_time_slots:
+            if item.price_inc >= self.LIMIT_OFF_PEAK:
+                item.tariff = RateType.PEAK
+                combined_peak.append(item)
+
+        # Re-sort the bucket by timestamp
+        combined_peak.sort(key=lambda x: x.valid_from)
+
+        return combined_peak
+
     # Recursive function to locate the last element in a chain of adjacent time slots
     def __find_end_slot(self, rate_time_slots, length, index=0):
         # If Start is the last element in the array, we have finished
@@ -200,8 +213,14 @@ class Agile:
 
     # Merge any adjacent time-slots, and calculate the average unit cost for the merged slot
     def merge_adjacent_slots(self, rate_time_slots):
-        merged_array = []
+
         slot_count = len(rate_time_slots)
+
+        # If the list is empty there's nothing to do
+        if slot_count == 0:
+            return []
+
+        merged_array = []
 
         start = 0
         while start < slot_count:
@@ -252,6 +271,10 @@ class Agile:
     # Build the Tesla API data structure for ToU slots
     @staticmethod
     def build_tou_periods(rate_time_slots):
+        # if the list is empty, there's nothing to do
+        if len(rate_time_slots) == 0:
+            return []
+
         tou_periods = []
 
         for item in rate_time_slots:
@@ -276,12 +299,20 @@ class Agile:
 
     @staticmethod
     def print_tou(name, avg_rate, rate_array):
+        # if the list is empty, there's nothing to do
+        if len(rate_array) == 0:
+            return
+        
         print(f"Average {name} Slot Rate = {avg_rate}p")
         for item in rate_array:
             print(item)
 
     @staticmethod
     def print_rate_slots(name, rate_array):
+        # if the list is empty, there's nothing to do
+        if len(rate_array) == 0:
+            return
+
         print(f"[{name}Slots = {len(rate_array)}]")
         for item in rate_array:
             print(item)

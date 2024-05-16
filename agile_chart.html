@@ -2,11 +2,11 @@
 <html lang="en">
   <head>
     <title>AgileWall Chart</title>
-
+    <meta http-equiv="refresh" content="300">
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
   </head>
 
-  <body>
+  <body style="background-color:#1B1B1B;text-align:center">
     <div id="chart"> </div>
 
     <script src="agile_data.js"></script>
@@ -50,12 +50,63 @@
       var BORDER_CLR = "#000000"
       var LABEL_STYLE = { color: '#3427FF' }
 
+      // custom legend options
+
+      // render the overlays differently if the mid-peak and peak bands are combined (or not)
+      if (COMBINE == 1){
+        LEGEND = [SUPER_OFF_PEAK_LBL + " < " + OFF_PEAK +"p", 
+                  OFF_PEAK_LBL +  " < " + MID_PEAK +"p", 
+                  PEAK_LBL +  " < " + MAX +"p" ]
+        Y_BANDS = [
+          {
+            y: MIN, y2: OFF_PEAK, fillColor: SUPER_OFF_PEAK_CLR, borderColor: BORDER_CLR,
+          },
+          {
+            y: OFF_PEAK, y2: MID_PEAK, fillColor: OFF_PEAK_CLR, borderColor: BORDER_CLR 
+          },
+          {
+            y: MID_PEAK, y2: MAX, fillColor: PEAK_CLR, borderColor: BORDER_CLR
+          }
+        ]
+      }
+      else{
+        LEGEND = [SUPER_OFF_PEAK_LBL + " < " + OFF_PEAK +"p", 
+                  OFF_PEAK_LBL +  " < " + MID_PEAK +"p", 
+                  MID_PEAK_LBL +  " < " + PEAK +"p", 
+                  PEAK_LBL +  " < " + MAX +"p" ]
+                  Y_BANDS = [
+          {
+            y: MIN, y2: OFF_PEAK, fillColor: SUPER_OFF_PEAK_CLR, borderColor: BORDER_CLR,
+          },
+          {
+            y: OFF_PEAK, y2: MID_PEAK, fillColor: OFF_PEAK_CLR, borderColor: BORDER_CLR 
+          },
+          {
+            y: MID_PEAK, y2: PEAK, fillColor: MID_PEAK_CLR, borderColor: BORDER_CLR
+          },
+          {
+            y: PEAK, y2: MAX, fillColor: PEAK_CLR, borderColor: BORDER_CLR
+          }
+        ]
+      }
+
       var options = {
         chart: {
           toolbar: {
             show: SHOW_TOOLBAR
           },
           type: 'line'
+        },
+        theme: {
+          mode: CHART_THEME
+        },
+        grid: {
+          show: false,  
+          yaxis: {
+            lines: {
+                show: false
+            }
+          }
         },
         stroke: {
           curve: 'stepline',
@@ -88,39 +139,11 @@
               width: undefined,
               height: undefined,
               tooltipHoverFormatter: undefined,
-              customLegendItems: [SUPER_OFF_PEAK_LBL + " < " + OFF_PEAK +"p", 
-                                  OFF_PEAK_LBL +  " < " + MID_PEAK +"p", 
-                                  MID_PEAK_LBL +  " < " + PEAK +"p", 
-                                  PEAK_LBL +  " < " + MAX +"p" ]
+              customLegendItems: LEGEND
           },
       annotations: {
-        yaxis: [
-          {
-            y: MIN,
-            y2: OFF_PEAK,
-            fillColor: SUPER_OFF_PEAK_CLR,
-            borderColor: BORDER_CLR,
-          },
-          {
-            y: OFF_PEAK,
-            y2: MID_PEAK,
-            fillColor: OFF_PEAK_CLR,
-            borderColor: BORDER_CLR
-          },
-          {
-            y: MID_PEAK,
-            y2: PEAK,
-            fillColor: MID_PEAK_CLR,
-            borderColor: BORDER_CLR
-          },
-          {
-            y: PEAK,
-            y2: MAX,
-            fillColor: PEAK_CLR,
-            borderColor: BORDER_CLR
-          }
-        ],
-          xaxis: [
+        yaxis: Y_BANDS,
+        xaxis: [
           {
             x: TIME_SLOT_START,
             x2: TIME_SLOT_END,

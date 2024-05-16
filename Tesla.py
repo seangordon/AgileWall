@@ -1,6 +1,5 @@
 import teslapy
-import json
-from datetime import datetime, timedelta, date
+
 
 class Powerwall:
 
@@ -15,7 +14,6 @@ class Powerwall:
         batteries = tesla.battery_list()
         print(batteries[0])
         
-
     def get_tariff(self):
         # Powerwall API returns schedule data in local time (DST or non-DST)
 
@@ -23,7 +21,6 @@ class Powerwall:
             batteries = tesla.battery_list()
             tariff = batteries[0].get_tariff()
         return tariff
-
 
     def set_tariff(self, battery_tariff):
         # Powerwall API returns schedule data in local time (DST or non-DST)

@@ -6,7 +6,7 @@ import Tesla
 import argparse
 import ChartGen
 
-VERSION = "0.3"
+VERSION = "0.4"
 
 _LOGGER = logging.getLogger("AgileWall")
 
@@ -30,6 +30,7 @@ parser.add_argument("-d", "--delta", default=0, dest="delta", type=int,
 parser.add_argument("-c", "--chart", help="Generate Chart Data", action="store_true", default=False)
 parser.add_argument("-o", "--chart_path", default=".", dest="chart_path", type=str, 
                     help="Path to write the chart files to.")
+parser.add_argument("-P", "--peak", help="Combine Mid-Peak & Peak Bands", action="store_true", default=False)
 
 args = parser.parse_args()
 
@@ -41,6 +42,7 @@ LIST_ONLY = args.list_only
 DAY_OFFSET = args.delta
 CHART_GEN = args.chart
 CHART_PATH = args.chart_path
+PEAK_COMBINE = args.peak
 
 if DAY_OFFSET != 0:  # Requesting past days Agile schedules means we must not update the Powerwall
     LIST_ONLY = True
@@ -63,10 +65,16 @@ if not agile_time_slots:
     exit(-2)
 
 # Sort the time slots into one of the 4 Utility Plan codes
-Peak = agile.get_peak_slots(agile_time_slots)
 SuperOffPeak = agile.get_super_off_peak_slots(agile_time_slots)
 OffPeak = agile.get_off_peak_slots(agile_time_slots)
-MidPeak = agile.get_mid_peak_slots(agile_time_slots)
+
+# Are we combining the Mid-Peak & Peak Tariff Bands?
+if PEAK_COMBINE:
+    Peak = agile.get_combined_peak_slots(agile_time_slots)
+    MidPeak = []
+else:
+    MidPeak = agile.get_mid_peak_slots(agile_time_slots)
+    Peak = agile.get_peak_slots(agile_time_slots)
 
 if VERBOSE:
     print()
@@ -105,13 +113,17 @@ if VERBOSE:
     agile.print_tou("Off-Peak", rate_off_peak, tou_off_peak)
 
 tou_mid_peak = agile.build_tou_periods(MidPeak)
-rate_mid_peak = agile.get_average_rate(MidPeak)
+tou_peak = agile.build_tou_periods(Peak)
+
+if PEAK_COMBINE:
+    rate_mid_peak = round(agile.MAX, 3)
+    rate_peak = round(agile.MAX, 3)
+else:
+    rate_mid_peak = agile.get_average_rate(MidPeak)
+    rate_peak = agile.get_average_rate(Peak)
+
 if VERBOSE:
     agile.print_tou("Mid-Peak", rate_mid_peak, tou_mid_peak)
-
-tou_peak = agile.build_tou_periods(Peak)
-rate_peak = agile.get_average_rate(Peak)
-if VERBOSE:
     agile.print_tou("Peak", rate_peak, tou_peak)
 
 # Build the Rate Type / Energy Charges structure 
@@ -162,7 +174,8 @@ if CHART_GEN:
         print("Error writing chart time slot data.")
         exit(-4)
 
-    if not ChartGen.export_agile_rates(agile.MIN, agile.MAX, agile.LIMIT_SUPER_OFF_PEAK, agile.LIMIT_OFF_PEAK, agile.LIMIT_MID_PEAK, CHART_PATH):
+    if not ChartGen.export_agile_rates(agile.MIN, agile.MAX, agile.LIMIT_SUPER_OFF_PEAK, agile.LIMIT_OFF_PEAK,
+                                       agile.LIMIT_MID_PEAK, PEAK_COMBINE, CHART_PATH):
         print("Error writing chart pw rate data.")
         exit(-4)
 

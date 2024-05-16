@@ -2,6 +2,7 @@ import requests
 
 # Dumps all the publicly available Octopus Tariffs along with their code and description
 
+
 class Product:
     def __init__(self, code, direction, full_name, description, is_variable, brand):
         self.code = code
@@ -15,6 +16,7 @@ class Product:
         return (f"{self.code}, {self.full_name}, {str(self.is_variable)}, {str(self.brand)}, "
                 f"{str(self.direction)} \n {str(self.description)}")
 
+
 headers = {"content-type": "application/json"}
 url = f"https://api.octopus.energy/v1/products"
 
@@ -27,7 +29,7 @@ if len(results) == 0:
 rate_codes = []
 for rate in results:
     rate_codes.append(Product(rate["code"], rate["direction"], rate["full_name"],
-                            rate["description"], rate["is_variable"], rate["brand"]))
+                              rate["description"], rate["is_variable"], rate["brand"]))
     
 for item in rate_codes:
     print(item)
